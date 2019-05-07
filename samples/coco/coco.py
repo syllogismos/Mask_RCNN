@@ -111,7 +111,7 @@ class CocoDataset(utils.Dataset):
         coco = COCO("{}/annotations/instances_{}{}.json".format(dataset_dir, subset, year))
         if subset == "minival" or subset == "valminusminival":
             subset = "val"
-        image_dir = "{}/{}{}".format(dataset_dir, subset, year)
+        image_dir = "{}/images/{}{}".format(dataset_dir, subset, year)
 
         # Load all classes or a subset?
         if not class_ids:
@@ -410,6 +410,11 @@ if __name__ == '__main__':
     parser.add_argument('--dataset', required=True,
                         metavar="/path/to/coco/",
                         help='Directory of the MS-COCO dataset')
+    parser.add_argument('--steps', required=False,
+                        default=1000,
+                        metavar="<steps_per_epoch>",
+                        help="Number of steps for each training epoch"
+                        )
     parser.add_argument('--year', required=False,
                         default=DEFAULT_DATASET_YEAR,
                         metavar="<year>",
@@ -435,6 +440,7 @@ if __name__ == '__main__':
     print("Command: ", args.command)
     print("Model: ", args.model)
     print("Dataset: ", args.dataset)
+    print("Steps: ", args.steps)
     print("Year: ", args.year)
     print("Logs: ", args.logs)
     print("Auto Download: ", args.download)
@@ -450,6 +456,7 @@ if __name__ == '__main__':
             IMAGES_PER_GPU = 1
             DETECTION_MIN_CONFIDENCE = 0
         config = InferenceConfig()
+    config.STEPS_PER_EPOCH = args.steps
     config.display()
 
     # Create model
