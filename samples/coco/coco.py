@@ -511,6 +511,7 @@ if __name__ == '__main__':
                     learning_rate=config.LEARNING_RATE,
                     epochs=40,
                     layers='heads',
+                    custom_callbacks=wandb.keras.WandbCallback,
                     augmentation=augmentation)
 
         # Training - Stage 2
@@ -520,6 +521,7 @@ if __name__ == '__main__':
                     learning_rate=config.LEARNING_RATE,
                     epochs=120,
                     layers='4+',
+                    custom_callbacks=wandb.keras.WandbCallback,
                     augmentation=augmentation)
 
         # Training - Stage 3
@@ -529,6 +531,7 @@ if __name__ == '__main__':
                     learning_rate=config.LEARNING_RATE / 10,
                     epochs=160,
                     layers='all',
+                    custom_callbacks=wandb.keras.WandbCallback,
                     augmentation=augmentation)
 
     elif args.command == "evaluate":
