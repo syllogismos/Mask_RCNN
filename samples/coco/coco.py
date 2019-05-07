@@ -456,7 +456,7 @@ if __name__ == '__main__':
             IMAGES_PER_GPU = 1
             DETECTION_MIN_CONFIDENCE = 0
         config = InferenceConfig()
-    config.STEPS_PER_EPOCH = args.steps
+    config.STEPS_PER_EPOCH = int(args.steps)
     config.display()
 
     # Create model
