@@ -397,6 +397,8 @@ def evaluate_coco(model, dataset, coco, eval_type="bbox", limit=0, image_ids=Non
 
 
 if __name__ == '__main__':
+    import wandb
+    wandb.init()
     import argparse
 
     # Parse command line arguments
@@ -429,6 +431,7 @@ if __name__ == '__main__':
                         help='Automatically download and unzip MS-COCO files (default=False)',
                         type=bool)
     args = parser.parse_args()
+    wandb.config.update(args)
     print("Command: ", args.command)
     print("Model: ", args.model)
     print("Dataset: ", args.dataset)

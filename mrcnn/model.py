@@ -30,6 +30,8 @@ from distutils.version import LooseVersion
 assert LooseVersion(tf.__version__) >= LooseVersion("1.3")
 assert LooseVersion(keras.__version__) >= LooseVersion('2.0.8')
 
+import wandb
+
 
 ############################################################
 #  Utility Functions
@@ -2341,6 +2343,7 @@ class MaskRCNN():
                                         histogram_freq=0, write_graph=True, write_images=False),
             keras.callbacks.ModelCheckpoint(self.checkpoint_path,
                                             verbose=0, save_weights_only=True),
+            wandb.keras.WandbCallback(),
         ]
 
         # Add custom callbacks to the list
