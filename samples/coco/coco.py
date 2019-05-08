@@ -511,8 +511,7 @@ if __name__ == '__main__':
                     learning_rate=config.LEARNING_RATE,
                     epochs=40,
                     layers='heads',
-                    augmentation=augmentation,
-                    custom_callbacks=[wandb.keras.WandbCallback()])
+                    augmentation=augmentation)
 
         # Training - Stage 2
         # Finetune layers from ResNet stage 4 and up
@@ -521,8 +520,7 @@ if __name__ == '__main__':
                     learning_rate=config.LEARNING_RATE,
                     epochs=120,
                     layers='4+',
-                    augmentation=augmentation,
-                    custom_callbacks=[wandb.keras.WandbCallback()])
+                    augmentation=augmentation)
 
         # Training - Stage 3
         # Fine tune all layers
@@ -531,8 +529,7 @@ if __name__ == '__main__':
                     learning_rate=config.LEARNING_RATE / 10,
                     epochs=160,
                     layers='all',
-                    augmentation=augmentation,
-                    custom_callbacks=[wandb.keras.WandbCallback()])
+                    augmentation=augmentation)
 
     elif args.command == "evaluate":
         # Validation dataset
