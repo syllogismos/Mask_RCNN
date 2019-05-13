@@ -1838,7 +1838,9 @@ class log_images_for_wandb(Callback):
                 tensor = layer.weights[w]
                 ax[l, w].set_title(tensor.name)
                 _ = ax[l, w].hist(weight[w].flatten(), 50)
-        wandb.log({"histograms": [wandb.Image(plt, caption="annotations")]}, commit=False)
+        wandb.log({"histograms": [wandb.Image(plt, caption="histogram of trainable weights and biases")]}, commit=False)
+
+        print(type(self.validation_data))
 
     def find_trainable_layer(self, layer):
         """If a layer is encapsulated by another layer, this function
