@@ -1826,7 +1826,7 @@ class log_images_for_wandb(Callback):
         # Pick layer types to display
         LAYER_TYPES = ['Conv2D', 'Dense', 'Conv2DTranspose']
         # Get layers
-        layers = self.model.get_trainable_layers()
+        layers = self.get_trainable_layers(self.model)
         layers = list(filter(lambda l: l.__class__.__name__ in LAYER_TYPES, 
                         layers))
         # Display Histograms
@@ -1839,6 +1839,27 @@ class log_images_for_wandb(Callback):
                 ax[l, w].set_title(tensor.name)
                 _ = ax[l, w].hist(weight[w].flatten(), 50)
         wandb.log({"histograms": [wandb.Image(plt, caption="annotations")]}, commit=False)
+
+    def find_trainable_layer(self, layer):
+        """If a layer is encapsulated by another layer, this function
+        digs through the encapsulation and returns the layer that holds
+        the weights.
+        """
+        if layer.__class__.__name__ == 'TimeDistributed':
+            return self.find_trainable_layer(layer.layer)
+        return layer
+
+    def get_trainable_layers(self, model):
+        """Returns a list of layers that have weights."""
+        layers = []
+        # Loop through all layers
+        for l in model.layers:
+            # If layer is a wrapper, find inner trainable layer
+            l = self.find_trainable_layer(l)
+            # Include layer if it has weights
+            if l.get_weights():
+                layers.append(l)
+        return layers
 
 
 ############################################################
