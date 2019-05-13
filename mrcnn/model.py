@@ -22,6 +22,8 @@ import keras.backend as K
 import keras.layers as KL
 import keras.engine as KE
 import keras.models as KM
+from keras.callbacks import Callback
+import matplotlib.pyplot as plt
 
 from mrcnn import utils
 
@@ -1816,6 +1818,30 @@ def data_generator(dataset, config, shuffle=True, augment=False, augmentation=No
 
 
 ############################################################
+#  Keras Callbacks
+############################################################
+
+class log_images_for_wandb(Callback):
+    def on_epoch_end(self, epoch, logs={}):
+        # Pick layer types to display
+        LAYER_TYPES = ['Conv2D', 'Dense', 'Conv2DTranspose']
+        # Get layers
+        layers = self.model.get_trainable_layers()
+        layers = list(filter(lambda l: l.__class__.__name__ in LAYER_TYPES, 
+                        layers))
+        # Display Histograms
+        fig, ax = plt.subplots(len(layers), 2, figsize=(10, 3*len(layers)),
+                            gridspec_kw={"hspace":1})
+        for l, layer in enumerate(layers):
+            weights = layer.get_weights()
+            for w, weight in enumerate(weights):
+                tensor = layer.weights[w]
+                ax[l, w].set_title(tensor.name)
+                _ = ax[l, w].hist(weight[w].flatten(), 50)
+        wandb.log({"histograms": [wandb.Image(plt, caption="annotations")]}, commit=False)
+
+
+############################################################
 #  MaskRCNN Class
 ############################################################
 
@@ -2343,6 +2369,7 @@ class MaskRCNN():
                                         histogram_freq=0, write_graph=True, write_images=False),
             keras.callbacks.ModelCheckpoint(self.checkpoint_path,
                                             verbose=0, save_weights_only=True),
+            log_images_for_wandb(),
             wandb.keras.WandbCallback(save_weights_only=True, data_type='images', log_weights=True),
         ]
 
