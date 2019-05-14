@@ -1822,6 +1822,9 @@ def data_generator(dataset, config, shuffle=True, augment=False, augmentation=No
 ############################################################
 
 class log_images_for_wandb(Callback):
+    def __init__(self, validation_data):
+        self.validation_data = validation_data
+
     def on_epoch_end(self, epoch, logs={}):
         # Pick layer types to display
         LAYER_TYPES = ['Conv2D', 'Dense', 'Conv2DTranspose']
@@ -1841,6 +1844,7 @@ class log_images_for_wandb(Callback):
         wandb.log({"histograms": [wandb.Image(plt, caption="histogram of trainable weights and biases")]}, commit=False)
 
         print(type(self.validation_data))
+        print(next(self.validation_data))
 
     def find_trainable_layer(self, layer):
         """If a layer is encapsulated by another layer, this function
@@ -2392,7 +2396,7 @@ class MaskRCNN():
                                         histogram_freq=0, write_graph=True, write_images=False),
             keras.callbacks.ModelCheckpoint(self.checkpoint_path,
                                             verbose=0, save_weights_only=True),
-            log_images_for_wandb(),
+            log_images_for_wandb(validation_data=val_generator),
             wandb.keras.WandbCallback(save_weights_only=True, data_type='images', log_weights=True),
         ]
 
