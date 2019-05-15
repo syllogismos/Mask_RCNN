@@ -1826,25 +1826,36 @@ class log_images_for_wandb(Callback):
         self.validation_data = validation_data
 
     def on_epoch_end(self, epoch, logs={}):
-        # Pick layer types to display
-        LAYER_TYPES = ['Conv2D', 'Dense', 'Conv2DTranspose']
-        # Get layers
-        layers = self.get_trainable_layers(self.model)
-        layers = list(filter(lambda l: l.__class__.__name__ in LAYER_TYPES, 
-                        layers))
-        # Display Histograms
-        fig, ax = plt.subplots(len(layers), 2, figsize=(10, 3*len(layers)),
-                            gridspec_kw={"hspace":1})
-        for l, layer in enumerate(layers):
-            weights = layer.get_weights()
-            for w, weight in enumerate(weights):
-                tensor = layer.weights[w]
-                ax[l, w].set_title(tensor.name)
-                _ = ax[l, w].hist(weight[w].flatten(), 50)
-        wandb.log({"histograms": [wandb.Image(plt, caption="histogram of trainable weights and biases")]}, commit=False)
+        # # Pick layer types to display
+        # LAYER_TYPES = ['Conv2D', 'Dense', 'Conv2DTranspose']
+        # # Get layers
+        # layers = self.get_trainable_layers(self.model)
+        # layers = list(filter(lambda l: l.__class__.__name__ in LAYER_TYPES, 
+        #                 layers))
+        # # Display Histograms
+        # fig, ax = plt.subplots(len(layers), 2, figsize=(10, 3*len(layers)),
+        #                     gridspec_kw={"hspace":1})
+        # for l, layer in enumerate(layers):
+        #     weights = layer.get_weights()
+        #     for w, weight in enumerate(weights):
+        #         tensor = layer.weights[w]
+        #         ax[l, w].set_title(tensor.name)
+        #         _ = ax[l, w].hist(weight[w].flatten(), 50)
+        # wandb.log({"histograms": [wandb.Image(plt, caption="histogram of trainable weights and biases")]}, commit=False)
+
+        from mrcnn.config import Config
+        config = Config()
+        config.NAME = 'coco'
+        config.GPU_COUNT = 1
+        config.IMAGES_PER_GPU = 1
 
         image_id = random.choice(self.validation_data.image_ids)
         print(image_id)
+        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+        image, image_meta, gt_class_id, gt_bbox, gt_mask = load_image_gt(self.validation_data, config, image_id, use_mini_mask=False)
+        info = self.validation_data.image_info[image_id]
+        print("image ID: {}.{} ({}) {}".format(info["source"], info["id"], image_id, 
+                                       self.validation_data.image_reference(image_id)))
         print("@@@@@@@@@@@@@@@@@@")
     def find_trainable_layer(self, layer):
         """If a layer is encapsulated by another layer, this function
