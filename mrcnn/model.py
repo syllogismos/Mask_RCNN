@@ -1858,7 +1858,7 @@ class log_images_for_wandb(Callback):
         print(image, image_meta, gt_class_id, gt_bbox, gt_mask)
         print("image ID: {}.{} ({}) {}".format(info["source"], info["id"], image_id, 
                                        self.validation_data.image_reference(image_id)))
-        results = mrcnn.detect([image], verbose=1)
+        results = self.mrcnn.detect([image], verbose=1)
         print(results)
         print("@@@@@@@@@@@@@@@@@@")
     
