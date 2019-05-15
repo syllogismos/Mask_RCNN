@@ -1854,6 +1854,7 @@ class log_images_for_wandb(Callback):
         print("@@@@@@@@@@@@@@@@@@@@@@@@@@@")
         image, image_meta, gt_class_id, gt_bbox, gt_mask = load_image_gt(self.validation_data, config, image_id, use_mini_mask=False)
         info = self.validation_data.image_info[image_id]
+        print(image, image_meta, gt_class_id, gt_bbox, gt_mask)
         print("image ID: {}.{} ({}) {}".format(info["source"], info["id"], image_id, 
                                        self.validation_data.image_reference(image_id)))
         print("@@@@@@@@@@@@@@@@@@")
