@@ -1822,8 +1822,9 @@ def data_generator(dataset, config, shuffle=True, augment=False, augmentation=No
 ############################################################
 
 class log_images_for_wandb(Callback):
-    def __init__(self, validation_data):
+    def __init__(self, validation_data, mrcnn):
         self.validation_data = validation_data
+        self.mrcnn = mrcnn
 
     def on_epoch_end(self, epoch, logs={}):
         # # Pick layer types to display
@@ -1857,7 +1858,10 @@ class log_images_for_wandb(Callback):
         print(image, image_meta, gt_class_id, gt_bbox, gt_mask)
         print("image ID: {}.{} ({}) {}".format(info["source"], info["id"], image_id, 
                                        self.validation_data.image_reference(image_id)))
+        results = mrcnn.detect([image], verbose=1)
+        print(results)
         print("@@@@@@@@@@@@@@@@@@")
+    
     def find_trainable_layer(self, layer):
         """If a layer is encapsulated by another layer, this function
         digs through the encapsulation and returns the layer that holds
@@ -2408,7 +2412,7 @@ class MaskRCNN():
                                         histogram_freq=0, write_graph=True, write_images=False),
             keras.callbacks.ModelCheckpoint(self.checkpoint_path,
                                             verbose=0, save_weights_only=True),
-            log_images_for_wandb(validation_data=val_dataset),
+            log_images_for_wandb(validation_data=val_dataset, mrcnn=self),
             wandb.keras.WandbCallback(save_weights_only=True, data_type='images', log_weights=True),
         ]
 
